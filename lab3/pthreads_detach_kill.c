@@ -98,26 +98,22 @@ int main()
 	else
 		printf("\twatek glowny: odlaczony watek potomny PRAWDOPODOBNIE NIE zostal zabity\n");
 	
+
+	//Inicjacja atrybutów?
+
 	pthread_attr_init(&attr);
+	//Ustawianie typu watku na odłaczony
 	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
 	printf("watek glowny: tworzenie odlaczonego watku potomnego nr 3\n");
 	pthread_create(&tid, &attr, zadanie_watku, NULL);
 	pthread_attr_destroy(&attr);
 	printf("\twatek glowny: koniec pracy, watek odlaczony pracuje dalej\n");
 	pthread_exit(NULL); // co stanie sie gdy uzyjemy exit(0)
-	//Wątek odłączony
+
+	//pthread_exit(NULL); -  odłącza tylko wątek główny a odłączone pracują dalej
+	//exit(0) - kończy cały proces i  zabija wątki odłączone
 	
-	//Inicjacja atrybutów?
-
-	//Ustawianie typu watku na odłaczony
-
-	printf("watek glowny: tworzenie odlaczonego watku potomnego nr 3\n");
-	pthread_create(&tid, &attr, zadanie_watku, NULL);
-
-	//Niszczenie atrybutów
-
-	printf("\twatek glowny: koniec pracy, watek odlaczony pracuje dalej\n");
-	pthread_exit(NULL); // co stanie sie gdy uzyjemy exit(0)?
 }
+
 
 

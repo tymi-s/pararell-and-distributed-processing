@@ -9,7 +9,6 @@ int zmienna_wspolna=0;
 #define ROZMIAR WYMIAR*WYMIAR
 double a[ROZMIAR],b[ROZMIAR],c[ROZMIAR];
 
-
 double czasozajmowacz(){
   int i, j, k;
   int n=WYMIAR;
@@ -29,30 +28,30 @@ double czasozajmowacz(){
 void * zadanie_watku (void * arg_wsk)
 {
 	int a = *(int *)arg_wsk;
-
-	return(NULL);
+	printf("\nZmienna w funkcji watku: %d",a);
+	return NULL;
 }
-
+// watki działają  w różnej kolejności co zależy od doboru czasu dla nich przez procesor
+// aby nadać kolejność wykonywania wątków można użyć pthread_setschedparam
 int main(){
 	pthread_t tid[ILOSC], tid2[ILOSC];
 	pthread_attr_t attr;
 	void *wynik;
 	int id[ILOSC];
 	int i;
+	int p = ILOSC;
 	
+	for (int j=0; j<p;j++){
+		id[j]=j;
+	} 
 	for(i=0; i <ILOSC;i++){
-		pthread_create(&tid[i],ILOSC,zadanie_watku,&id[i]);
+		
+		pthread_create(&tid[i],NULL,zadanie_watku,&id[i]);
 	}
 	for(i=0; i<ILOSC;i++){
 		
-		pthread_join(tid[i], &wynik); 
-        	if (wynik == PTHREAD_CANCELED){
-                	printf("\twatek glowny: watek potomny zostal zabity\n");
-			}        	
-		else{
-                	printf("\twatek glowny: watek potomny NIE zostal zabity - blad\n");
-		}	
-}
+		pthread_join(tid[i], &wynik); 	
+	}
 }
 
 
