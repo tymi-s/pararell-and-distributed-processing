@@ -70,15 +70,24 @@ void* calka_fragment_petli_w(void* arg_wsk){
   // a = a_global; // itd. itp. - wartości globalne nadaje calka_zrownoleglenie_petli
 
   // dekompozycja cykliczna
-  int my_start = my_id;
-  int my_end = N;
-  int my_stride = l_w;
+  //int my_start = my_id;
+  //int my_end = N;
+  //int my_stride = l_w;
 
   // dekompozycja blokowa
-  //int my_start = 0;
-  //int my_end = 0;
-  //int my_stride = 0;
+  int my_start;
+  int my_end;
+  int my_stride;
+  int blok_size = N/l_w;
+  int reszta = N% l_w;
 
+
+  if(my_id <reszta){
+  //reszzta =  blok_size +1
+  	my_start = reszta *(blok_size + 1) + (my_id - reszta) * blok_size;
+  	my_end = my_start + blok_size;
+  }
+  my_stride =1;
   // something else ? (dekompozycja blokowo-cykliczna)
 
   printf("\nWątek %d: my_start %d, my_end %d, my_stride %d\n", 
