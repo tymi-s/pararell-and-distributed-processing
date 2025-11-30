@@ -37,7 +37,7 @@ int main( int argc, char *argv[] ){
   printf("\nPodaj wysokość pojedynczego trapezu:  "); scanf("%lf", &dx);
 
   int l_w=0;
-  //printf("\nPodaj liczbę wątków:  "); scanf("%d", &l_w);
+  printf("\nPodaj liczbę wątków:  "); scanf("%d", &l_w);
 
   printf("\nPoczatek obliczeń sekwencyjnych\n");
   t1 = czas_zegara();
