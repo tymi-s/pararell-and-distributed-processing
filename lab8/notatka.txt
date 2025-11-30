@@ -1,13 +1,103 @@
-# jak to dziala
+#ifndef _czytelnia_
+#define _czytelnia_
 
-mamy czytelników i pisarzy. ogolnie jest tak że pisaż może pisać gdy nikt nie czyta
-moze byc wiele czytających jednoczesnie
-jest mechanizm zapobiegający zagłodzeniu pisaży w my_read_lock_lock 
-zagłodzenie chodzi o to ze jak pisaż czeka aż wszyscy przeczytają to nie może dojść żaden nowy czytelnik
+#include <pthread.h>
 
-przed zamkiem - oznacza ze wątek zgłasza chęć dostępu, ale go jeszcze niema 
-blokada - blokada żeby nie wszedł bo trzeba sprawdzić warunek. jesli warunki nie pozwalają to czeka na pthread_cond_wait
-wchodzi - wątek dostał dostęp i jest w sekcji krytycznej 
-wychodze - skonczyl czytanie/ pisanie i zaraz zwraca zasób
-po zamku - po wywołaniu unlock
+/*** Definicje typow zmiennych ***/
+typedef struct {
+  int l_p; // liczba piszacych
+  int l_c; // liczba czytajacych
+  pthread_rwlock_t rwlock; // zamek read-write
+} cz_t;
 
+/*** Deklaracje procedur interfejsu ***/
+void inicjuj(cz_t* czytelnia_p);
+void czytam(cz_t* czytelnia_p);
+void pisze(cz_t* czytelnia_p);
+
+int my_read_lock_lock(cz_t* czytelnia_p);
+int my_read_lock_unlock(cz_t* czytelnia_p);
+int my_write_lock_lock(cz_t* czytelnia_p);
+int my_write_lock_unlock(cz_t* czytelnia_p);
+
+#endif
+
+
+
+###########################################################
+
+#include<stdlib.h>
+#include<stdio.h>
+#include<unistd.h>
+#include<pthread.h>
+
+#include"czytelnia.h"
+
+
+/*** Implementacja procedur interfejsu ***/
+
+int my_read_lock_lock(cz_t* cz_p){
+  
+  pthread_rwlock_rdlock(&cz_p->rwlock);  // Zamek do CZYTANIA
+  cz_p->l_c++;
+  
+  return 0;
+}
+
+
+int my_read_lock_unlock(cz_t* cz_p){
+   
+  cz_p->l_c--;
+  pthread_rwlock_unlock(&cz_p->rwlock);  // Zwolnienie zamka
+  
+  return 0;
+}
+
+
+int my_write_lock_lock(cz_t* cz_p){
+  
+  pthread_rwlock_wrlock(&cz_p->rwlock);  // Zamek do PISANIA
+  cz_p->l_p++;
+  
+  return 0;
+}
+
+
+int my_write_lock_unlock(cz_t* cz_p){
+    
+  cz_p->l_p--;
+  pthread_rwlock_unlock(&cz_p->rwlock);  // Zwolnienie zamka
+  
+  return 0;
+}
+
+void inicjuj(cz_t* cz_p){
+
+  cz_p->l_p = 0;
+  cz_p->l_c = 0;
+  
+  pthread_rwlock_init(&cz_p->rwlock, NULL);  // Inicjalizacja rwlock
+
+}
+
+void czytam(cz_t* cz_p){
+
+  printf("\t\t\t\t\tczytam:  l_c %d, l_p %d\n", cz_p->l_c, cz_p->l_p); 
+
+  if( cz_p->l_p>1 || (cz_p->l_p==1 && cz_p->l_c>0) || cz_p->l_p<0 || cz_p->l_c<0 ) {
+    printf("Blad: ....\n");
+  }
+
+  usleep(rand()%3000000);
+}
+
+void pisze(cz_t* cz_p){
+
+  printf("\t\t\t\t\tpisze:   l_c %d, l_p %d\n", cz_p->l_c, cz_p->l_p); 
+
+  if( cz_p->l_p>1 || (cz_p->l_p==1 && cz_p->l_c>0) || cz_p->l_p<0 || cz_p->l_c<0 ) {
+    printf("Blad: ....\n");
+  }
+
+  usleep(rand()%3000000);
+}
