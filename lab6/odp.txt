@@ -1,0 +1,12 @@
+#start
+tworzy nowy wątek i automatycznie wywołuje metodę run() w tym wątku. program działa równolegle
+
+#run
+nie tworzy nowego wątku tylko działa jak zwykła metyoda w main. program działa sekwencyjnie
+
+#pthread a runnable
+
+to różne sposoby tworzenia wątków.
+
+pthread: mamy dziedziczenie więc jest to mniej elastyczne bo klasa nie może w javie dziedziczyć wielokrotnie
+runnable: mamy to implements więc możemy dziedziczyć po jeszcze jakiejś klasie i możemy różnie wykorzystać różnie to runnable zależnie od wątku.
