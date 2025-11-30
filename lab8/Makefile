@@ -1,22 +1,31 @@
+# prosty Makefile dla prostych programow
 
+# nazwa pliku z kodem wykonywalnym
+NAZWA = czyt_pis
+
+# kompilator C
 CC = gcc
-
+# konsolidator (linker, loader) C
 LD = gcc
+# archiwizator (program do tworzenia bibliotek)
+AR = ar -ru
 
-OPT = -O3
+# opcje kompilacji
+CFL = -pthread
+LDFL = -pthread
+# katalogi z bibliotekami i dolaczane biblioteki
+LIB = -L. -lm
+# katalogi z plikami naglowkowymi i wklejane pliki naglowkowe 
+INC = -I.
 
-INC = 
+czyt_pis: czyt_pis.o czytelnia.o
+	$(LD) $(LDFL) -o $(NAZWA) czyt_pis.o czytelnia.o $(LIB)
 
-LIB = -pthread
+czyt_pis.o: czyt_pis.c czytelnia.h
+	$(CC) $(CFL) -c czyt_pis.c $(INC)
 
-main: main.o bariera.o
-	$(LD) $(OPT) -o main main.o bariera.o $(LIB)
-
-main.o: main.c
-	$(CC) -c $(OPT) main.c $(INC)
-
-bariera.o: bariera.c
-	$(CC) -c $(OPT) bariera.c $(INC)
+czytelnia.o: czytelnia.c czytelnia.h
+	$(CC) $(CFL) -c czytelnia.c $(INC)
 
 clean:
-	rm -f *.o main
+	rm *.o 

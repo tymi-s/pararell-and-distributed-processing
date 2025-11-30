@@ -1,0 +1,13 @@
+# jak to dziala
+
+mamy czytelników i pisarzy. ogolnie jest tak że pisaż może pisać gdy nikt nie czyta
+moze byc wiele czytających jednoczesnie
+jest mechanizm zapobiegający zagłodzeniu pisaży w my_read_lock_lock 
+zagłodzenie chodzi o to ze jak pisaż czeka aż wszyscy przeczytają to nie może dojść żaden nowy czytelnik
+
+przed zamkiem - oznacza ze wątek zgłasza chęć dostępu, ale go jeszcze niema 
+blokada - blokada żeby nie wszedł bo trzeba sprawdzić warunek. jesli warunki nie pozwalają to czeka na pthread_cond_wait
+wchodzi - wątek dostał dostęp i jest w sekcji krytycznej 
+wychodze - skonczyl czytanie/ pisanie i zaraz zwraca zasób
+po zamku - po wywołaniu unlock
+
