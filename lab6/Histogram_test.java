@@ -10,7 +10,8 @@ class Histogram_test {
 	System.out.println("Set image size: n (#rows), m(#kolumns)");
 	int n = scanner.nextInt();
 	int m = scanner.nextInt();
-	Obraz_v1 obraz_1 = new Obraz_v1(n, m);
+	int[] tab = new int[94];
+	Obraz_v2 obraz_1 = new Obraz_v2(n, m);
 	
 	/////////////////////////////////////////////////////////////////////////////////obliczenia sekwencyjne
 	obraz_1.calculate_histogram();
@@ -19,29 +20,39 @@ class Histogram_test {
 
 	////////////////////////////////////////////////////////////////////////////////////////// Oblicz równolegle
         System.out.println("\nObliczenia rownlegle:");
-	System.out.println("\nSet number of characters to process (max 94):");
-        int num_chars = scanner.nextInt();
+	System.out.println("\nPodaj liczbe threads'ow: ");
+        int num_threads = scanner.nextInt();
+	int znaki_na_watek = 94/num_threads; // blok dla każdego watku
+	int reszta = 94% num_threads;
         
-        Watek[] threads = new Watek[num_chars];
+        Thread[] threads = new Thread[num_threads];//tablica threadsow
         
-        // tworzenie i uruchamianie watkow
-        for(int i=0; i<num_chars; i++) {
-            char znak = (char)(i+33); 
-            threads[i] = new Watek(obraz_1, znak, i+1);
+        int start = 0;
+        for(int i=0; i<num_threads; i++) {
+            int end = start + znaki_na_watek - 1;
+            if(i < reszta) end++;
+            
+            Watek_v2 zadanie = new Watek_v2(obraz_1, start, end, i+1);
+            threads[i] = new Thread(zadanie);  // tworzenie thread'a z runnable :D
             threads[i].start();
+            
+            start = end + 1;
         }
         
         // Czekaj na zakończenie
-        for(int i=0; i<num_chars; i++) {
+        for(int i=0; i<num_threads; i++) {
             try {
                 threads[i].join();
+		for(int i=0; i<94; i++){
+			tab[i]=zadanie[i];	
+		}
+		 
             } catch(InterruptedException e) {
                 e.printStackTrace();
             }
-        }
-        
-        // Porównanie
-        System.out.println("\nPORÓWNANIE");
+        }        
+        // Porównaj wyniki
+        System.out.println("\n=== PORÓWNANIE ===");
         obraz_1.compare_histograms();
 
     }
